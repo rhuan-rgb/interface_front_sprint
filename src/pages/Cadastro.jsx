@@ -1,24 +1,23 @@
 import * as React from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
-import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import api from "../axios/axios";
+import senai from "../assets/senai_logo.png";
 
 function Cadastro() {
   const [user, setUser] = useState({
-    email: "",
-    password: "",
     name: "",
+    email: "",
     cpf: "",
+    password: "",
   });
-
   const onChange = (event) => {
     const { name, value } = event.target;
+    console.log(name, value);
     setUser({ ...user, [name]: value });
     // ... mantem o estado inicial atual do user e só altera um unico valor
   };
@@ -32,10 +31,12 @@ function Cadastro() {
     await api.postCadastro(user).then(
       (response) => {
         alert(response.data.message);
+        console.log(user);
       },
       (error) => {
         console.log(error);
         alert(error.response.data.error);
+        console.log(user);
       }
     );
   }
@@ -51,12 +52,52 @@ function Cadastro() {
           alignItems: "center",
         }}
       >
-        <Avatar sx={{ margin: 1, backgroundColor: "#FFA500" }}>
-          <AssignmentIndIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Cadastre-se
-        </Typography>
+        <img style={{ width: "200px" }} src={senai} />
+
+        <Typography component="h1" variant="h5"></Typography>
+
+
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            width: "100%",
+            height: "50px",
+            backgroundColor: "#D9D9D9",
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+        ></div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            width: "100%",
+            height: "20px",
+            backgroundColor: "#d90000",
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+        ></div>
+
+        
+
+        <div
+          style={{
+            display: "flex",
+            padding: "10px",
+            width: "100%",
+            height: "15px",
+            backgroundColor: "#d90000",
+            position: "absolute",
+            bottom: 0,
+          }}
+        ></div>
+
         {/* /mt é a abreviação de marginTop */}
         <Box component="form" sx={{ mt: 1 }} onSubmit={handleSubmit}>
           <TextField
@@ -83,24 +124,12 @@ function Cadastro() {
           />
 
           <TextField
-            required
-            fullWidth
-            id="data_nascimento"
-            name="data_nascimento"
-            margin="normal"
-            type="date"
-            value={user.data_nascimento}
-            onChange={onChange}
-          />
-
-          <TextField
-            required
-            fullWidth
             id="cpf"
             label="CPF"
             name="cpf"
-            margin="normal"
-            type="number"
+            type="text"
+            required
+            fullWidth
             value={user.cpf}
             onChange={onChange}
           />
@@ -118,12 +147,12 @@ function Cadastro() {
           />
 
           <Button
-            sx={{ mt: 3, mb: 2, backgroundColor: "#FFA500" }}
+            sx={{ mt: 3, mb: 2, backgroundColor: "#E31313" }}
             fullWidth
             type="submit"
             variant="contained"
           >
-            Cadastrar
+            Cadastre-se
           </Button>
         </Box>
       </Box>
