@@ -10,8 +10,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Cadastro />} />       
-        <Route path="/organizadores" element={<ListaSalas/>} /> 
         <Route path="/login" element={<Login/>}/>
+        <Route path="/organizadores" element={<ListaSalas/>} /> 
+       
       </Routes>
     </BrowserRouter>
   );

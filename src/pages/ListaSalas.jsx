@@ -1,77 +1,89 @@
-import { useState, useEffect } from "react";
-
+import { useState, useEffect } from 'react'
 // Imports para criação de tabela
-import Table from "@mui/material/Table";
-import TableContainer from "@mui/material/TableContainer";
-
+import Table from '@mui/material/Table';
+import TableContainer from '@mui/material/TableContainer';
 // TableHead é onde colocamos os titulos
-import TableHead from "@mui/material/TableHead";
-
+import TableHead from '@mui/material/TableHead';
 // TableBody é onde colocamos o conteúdo
-import TableBody from "@mui/material/TableBody";
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import Paper from '@mui/material/Paper';
+import api from '../axios/axios'
+import { Button } from '@mui/material';
+import {useNavigate } from 'react-router-dom';
 
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import Paper from "@mui/material/Paper";
-import { TableFooter } from "@mui/material";
-import api from "../axios/axios";
-import { Button } from "@mui/material";
-import { Link } from "react-router-dom";
+function listRooms() {
+  const [rooms,setRooms] = useState([]);
+  const navigate = useNavigate();
 
-// useState gerencia o estado atual de uma variavel
-// setUsers é como se fosse uma função, seta a constante
+  
 
-function listOrganizadores() {
-  const [organizadores, setOrganizadores] = useState([]);
-
-  async function getOrganizadores() {
+  async function getRooms(){
     // Chamada da Api
-    await api.getOrganizadores().then(
-      (response) => {
-        console.log(response.data.organizadores);
-        setOrganizadores(response.data.organizadores);
-      },
-      (error) => {
-        console.log("Erro ", error);
+    await api.getClassroom().then(
+      (response)=>{
+        console.log(response.data.classrooms)
+        setRooms(response.data.classrooms)
+      },(error)=>{
+        console.log("Erro ",error)
       }
-    );
+    )
   }
 
-  const listOrganizadores = organizadores.map((organizador) => {
-    return (
-      <TableRow key={organizador.id_organizador}>
-        <TableCell align="center">{organizador.nome}</TableCell>
-        <TableCell align="center">{organizador.email}</TableCell>
-        <TableCell align="center">{organizador.telefone}</TableCell>
+  const listRooms = rooms.map((sala)=>{
+    return(
+      <TableRow key={sala.number}>
+        <TableCell align='center'>{sala.number}</TableCell>
+        <TableCell align="center">{sala.description}</TableCell>
+        <TableCell align="center">{sala.capacity}</TableCell>
       </TableRow>
-    );
-  });
+    )
+  })
 
-  useEffect(() => {
-    // Aqui devemos criar ou chamar uma função
-    getOrganizadores();
-  }, []);
+  function logout(){
+    localStorage.removeItem('authenticated');
+    navigate('/');
+  }
+
+  useEffect(()=>{
+    getRooms();
+  },[]);
+
 
   return (
     <div>
-      <h5>Lista de organizadores</h5>
-      <TableContainer component={Paper} style={{ margin: "2px" }}>
-        <Table size="small">
-          <TableHead style={{ backgroundColor: "#008000", borderStyle: "solid" }}>
-            <TableRow>
-              <TableCell align="center">Nome</TableCell>
-
-              <TableCell align="center">Email</TableCell>
-
-              <TableCell align="center">Telefone</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody> {listOrganizadores} </TableBody>
-        </Table>
-      </TableContainer>
-      
+      {rooms.lenght === 0 ?(<h1>Carregando Salas</h1>):
+    <div>
+        <h5>Lista de Salas</h5>
+        <TableContainer component={Paper} style={{margin:"2px"}}>
+          <Table size="small">
+            <TableHead style={{backgroundColor: "brown", borderStyle:"solid"}}>
+              <TableRow>
+                <TableCell align="center">
+                  Número
+                </TableCell>
+                <TableCell align="center">
+                  Descrição
+                </TableCell>
+                <TableCell align="center">
+                  Capacidade
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>{listRooms}</TableBody>
+          </Table>
+        </TableContainer>
+      <Button 
+      fullWidth
+      variant='contained'
+      onClick={logout}
+      >
+        SAIR
+      </Button>
+      </div>
+      }
     </div>
-  );
+  )
 }
-
-export default listOrganizadores;
+export default listRooms

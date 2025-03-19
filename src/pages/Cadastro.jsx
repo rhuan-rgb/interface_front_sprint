@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import api from "../axios/axios";
 import senai from "../assets/senai_logo.png";
+import { Link, useNavigate } from "react-router-dom";
 
 function Cadastro() {
   const [user, setUser] = useState({
@@ -15,11 +16,10 @@ function Cadastro() {
     cpf: "",
     password: "",
   });
+
   const onChange = (event) => {
     const { name, value } = event.target;
-    console.log(name, value);
     setUser({ ...user, [name]: value });
-    // ... mantem o estado inicial atual do user e só altera um unico valor
   };
 
   const handleSubmit = (event) => {
@@ -27,11 +27,14 @@ function Cadastro() {
     cadastro();
   };
 
+  const navigate = useNavigate();
+
   async function cadastro() {
     await api.postCadastro(user).then(
       (response) => {
         alert(response.data.message);
         console.log(user);
+        navigate("/login")
       },
       (error) => {
         console.log(error);
@@ -52,14 +55,17 @@ function Cadastro() {
           alignItems: "center",
         }}
       >
-        <img style={{ width: "200px" }} src={senai} />
+        <img
+          style={{ width: "200px", marginTop: "20px" }}
+          src={senai}
+          alt="Logo"
+        />
 
         <Typography component="h1" variant="h5"></Typography>
 
-
-
-        <div
-          style={{
+        {/* header*/}
+        <Box
+          sx={{
             display: "flex",
             justifyContent: "flex-end",
             width: "100%",
@@ -69,10 +75,10 @@ function Cadastro() {
             top: 0,
             left: 0,
           }}
-        ></div>
+        ></Box>
 
-        <div
-          style={{
+        <Box
+          sx={{
             display: "flex",
             justifyContent: "flex-end",
             width: "100%",
@@ -82,24 +88,36 @@ function Cadastro() {
             top: 0,
             left: 0,
           }}
-        ></div>
+        ></Box>
 
-        
-
-        <div
-          style={{
+        {/* Risco */}
+        <Box
+          sx={{
             display: "flex",
-            padding: "10px",
+            justifyContent: "flex-end",
+            marginTop: "50px",
             width: "100%",
-            height: "15px",
+            height: "1px",
+            backgroundColor: "#d90000",
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+        ></Box>
+
+        {/* Footer */}
+        <Box
+          sx={{
+            display: "flex",
+            width: "100%",
+            height: "25px",
             backgroundColor: "#d90000",
             position: "absolute",
             bottom: 0,
           }}
-        ></div>
+        ></Box>
 
-        {/* /mt é a abreviação de marginTop */}
-        <Box component="form" sx={{ mt: 1 }} onSubmit={handleSubmit}>
+        <Box component="form" sx={{}} onSubmit={handleSubmit}>
           <TextField
             required
             fullWidth
@@ -147,13 +165,32 @@ function Cadastro() {
           />
 
           <Button
-            sx={{ mt: 3, mb: 2, backgroundColor: "#E31313" }}
-            fullWidth
+            sx={{
+              mt: 1,
+              ml: 16,
+              backgroundColor: "#E31313",
+              borderRadius: "10px",
+            }}
             type="submit"
             variant="contained"
           >
             Cadastre-se
           </Button>
+
+          <Box
+            component={Link}
+            to="/login"
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mt: 2,
+              textDecoration: "none",
+              fontFamily: "sans-serif",
+              color: "gray",
+            }}
+          >
+            Já possui uma conta? Faça login
+          </Box>
         </Box>
       </Box>
     </Container>
