@@ -11,7 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
   const [user, setUser] = useState({
-    cpf: 0,
+    cpf: "",
     password: "",
   });
   const onChange = (event) => {
@@ -32,8 +32,7 @@ function Login() {
       (response) => {
         alert(response.data.message);
         console.log(user);
-        navigate("/organizadores")
-        
+        navigate("/listasalas");
       },
       (error) => {
         console.log(error);
@@ -127,7 +126,24 @@ function Login() {
             type="number"
             value={user.cpf}
             onChange={onChange}
-            sx={{ borderRadius: 100 }}
+            sx={{
+              // Removendo as formatações originais
+              "& .MuiInputBase-root": {
+                backgroundColor: "transparent", // Sem fundo
+                border: "none", // Removendo a borda
+                boxShadow: "none", // Removendo o efeito de sombra
+                padding: 0, // Removendo o padding
+              },
+              
+              "& .MuiOutlinedInput-notchedOutline": {
+                border: "none", // Remover a borda padrão (no caso do `outlined`)
+              },
+              "& .MuiInput-underline:before": {
+                borderBottom: "none", // Remover a linha de baixo no caso do `underline`
+              },
+
+              backgroundColor:'#D9D9D9', borderRadius:"10px"
+            }}
           />
 
           <TextField
@@ -140,6 +156,24 @@ function Login() {
             type="password"
             value={user.password}
             onChange={onChange}
+            sx={{
+              // Removendo as formatações originais
+              "& .MuiInputBase-root": {
+                backgroundColor: "transparent", // Sem fundo
+                border: "none", // Removendo a borda
+                boxShadow: "none", // Removendo o efeito de sombra
+                padding: 0, // Removendo o padding
+              },
+              
+              "& .MuiOutlinedInput-notchedOutline": {
+                border: "none", // Remover a borda padrão (no caso do `outlined`)
+              },
+              "& .MuiInput-underline:before": {
+                borderBottom: "none", // Remover a linha de baixo no caso do `underline`
+              },
+
+              backgroundColor:'#D9D9D9', borderRadius:"10px", marginTop: 0
+            }}
           />
 
           <Button
@@ -158,7 +192,7 @@ function Login() {
 
           <Box
             component={Link}
-            to="/"
+            to="/cadastro"
             sx={{
               display: "flex",
               justifyContent: "center",

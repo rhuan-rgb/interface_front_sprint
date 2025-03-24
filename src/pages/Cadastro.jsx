@@ -3,7 +3,6 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import api from "../axios/axios";
 import senai from "../assets/senai_logo.png";
@@ -34,7 +33,7 @@ function Cadastro() {
       (response) => {
         alert(response.data.message);
         console.log(user);
-        navigate("/login")
+        navigate("/");
       },
       (error) => {
         console.log(error);
@@ -60,8 +59,6 @@ function Cadastro() {
           src={senai}
           alt="Logo"
         />
-
-        <Typography component="h1" variant="h5"></Typography>
 
         {/* header*/}
         <Box
@@ -117,7 +114,7 @@ function Cadastro() {
           }}
         ></Box>
 
-        <Box component="form" sx={{}} onSubmit={handleSubmit}>
+        <Box component="form" onSubmit={handleSubmit}>
           <TextField
             required
             fullWidth
@@ -127,6 +124,26 @@ function Cadastro() {
             margin="normal"
             value={user.name}
             onChange={onChange}
+            sx={{
+              // Removendo as formatações originais
+              "& .MuiInputBase-root": {
+                backgroundColor: "transparent", // Sem fundo
+                border: "none", // Removendo a borda
+                boxShadow: "none", // Removendo o efeito de sombra
+                padding: 0, // Removendo o padding
+              },
+
+              "& .MuiOutlinedInput-notchedOutline": {
+                border: "none", // Remover a borda padrão (no caso do `outlined`)
+              },
+              "& .MuiInput-underline:before": {
+                borderBottom: "none", // Remover a linha de baixo no caso do `underline`
+              },
+
+              backgroundColor: "#D9D9D9",
+              borderRadius: "10px",
+              
+            }}
           />
 
           <TextField
@@ -139,17 +156,56 @@ function Cadastro() {
             type="email"
             value={user.email}
             onChange={onChange}
+            sx={{
+              // Removendo as formatações originais
+              "& .MuiInputBase-root": {
+                backgroundColor: "transparent", // Sem fundo
+                border: "none", // Removendo a borda
+                boxShadow: "none", // Removendo o efeito de sombra
+                padding: 0, // Removendo o padding
+              },
+
+              "& .MuiOutlinedInput-notchedOutline": {
+                border: "none", // Remover a borda padrão (no caso do `outlined`)
+              },
+              "& .MuiInput-underline:before": {
+                borderBottom: "none", // Remover a linha de baixo no caso do `underline`
+              },
+
+              backgroundColor: "#D9D9D9",
+              borderRadius: "10px",
+              marginTop: 0
+            }}
           />
 
           <TextField
             id="cpf"
             label="CPF"
             name="cpf"
-            type="text"
+            type="number"
             required
             fullWidth
             value={user.cpf}
             onChange={onChange}
+            sx={{
+              // Removendo as formatações originais
+              "& .MuiInputBase-root": {
+                backgroundColor: "transparent", // Sem fundo
+                border: "none", // Removendo a borda
+                boxShadow: "none", // Removendo o efeito de sombra
+                padding: 0, // Removendo o padding
+              },
+
+              "& .MuiOutlinedInput-notchedOutline": {
+                border: "none", // Remover a borda padrão (no caso do `outlined`)
+              },
+              "& .MuiInput-underline:before": {
+                borderBottom: "none", // Remover a linha de baixo no caso do `underline`
+              },
+
+              backgroundColor: "#D9D9D9",
+              borderRadius: "10px",
+            }}
           />
 
           <TextField
@@ -162,6 +218,26 @@ function Cadastro() {
             type="password"
             value={user.password}
             onChange={onChange}
+            sx={{
+              // Removendo as formatações originais
+              "& .MuiInputBase-root": {
+                backgroundColor: "transparent", // Sem fundo
+                border: "none", // Removendo a borda
+                boxShadow: "none", // Removendo o efeito de sombra
+                padding: 0, // Removendo o padding
+              },
+
+              "& .MuiOutlinedInput-notchedOutline": {
+                border: "none", // Remover a borda padrão (no caso do `outlined`)
+              },
+              "& .MuiInput-underline:before": {
+                borderBottom: "none", // Remover a linha de baixo no caso do `underline`
+              },
+
+              backgroundColor: "#D9D9D9",
+              borderRadius: "10px",
+              marginTop: 1
+            }}
           />
 
           <Button
@@ -179,7 +255,7 @@ function Cadastro() {
 
           <Box
             component={Link}
-            to="/login"
+            to="/"
             sx={{
               display: "flex",
               justifyContent: "center",
