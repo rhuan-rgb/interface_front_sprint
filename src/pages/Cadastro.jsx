@@ -218,6 +218,7 @@ function Cadastro() {
             type="password"
             value={user.password}
             onChange={onChange}
+            
             sx={{
               // Removendo as formatações originais
               "& .MuiInputBase-root": {

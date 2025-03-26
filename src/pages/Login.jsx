@@ -8,16 +8,18 @@ import { useState } from "react";
 import api from "../axios/axios";
 import senai from "../assets/senai_logo.png";
 import { Link, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Login() {
   const [user, setUser] = useState({
     cpf: "",
     password: "",
+    showPassword: false,
   });
+
   const onChange = (event) => {
     const { name, value } = event.target;
     setUser({ ...user, [name]: value });
-    // ... mantem o estado inicial atual do user e só altera um unico valor
   };
 
   const navigate = useNavigate();
@@ -31,8 +33,7 @@ function Login() {
     await api.postLogin(user).then(
       (response) => {
         alert(response.data.message);
-        console.log(user);
-        localStorage.setItem('authenticated', true)
+        localStorage.setItem("authenticated", true);
         navigate("/listasalas");
       },
       (error) => {
@@ -61,7 +62,7 @@ function Login() {
 
         <Typography component="h1" variant="h5"></Typography>
 
-        {/* header*/}
+        {/* header */}
         <Box
           sx={{
             display: "flex",
@@ -115,8 +116,8 @@ function Login() {
           }}
         ></Box>
 
-        {/* /mt é a abreviação de marginTop */}
-        <Box component="form" sx={{ mt: 1 }} onSubmit={handleSubmit}>
+        {/* Form */}
+        <Box component="form" sx={{ mt: 0 }} onSubmit={handleSubmit}>
           <TextField
             required
             fullWidth
@@ -128,14 +129,13 @@ function Login() {
             value={user.cpf}
             onChange={onChange}
             sx={{
-              // Removendo as formatações originais
               "& .MuiInputBase-root": {
                 backgroundColor: "transparent", // Sem fundo
                 border: "none", // Removendo a borda
                 boxShadow: "none", // Removendo o efeito de sombra
                 padding: 0, // Removendo o padding
               },
-              
+
               "& .MuiOutlinedInput-notchedOutline": {
                 border: "none", // Remover a borda padrão (no caso do `outlined`)
               },
@@ -143,44 +143,68 @@ function Login() {
                 borderBottom: "none", // Remover a linha de baixo no caso do `underline`
               },
 
-              backgroundColor:'#D9D9D9', borderRadius:"10px"
-            }}
-          />
-
-          <TextField
-            required
-            fullWidth
-            id="password"
-            label="Senha"
-            name="password"
-            margin="normal"
-            type="password"
-            value={user.password}
-            onChange={onChange}
-            sx={{
-              // Removendo as formatações originais
-              "& .MuiInputBase-root": {
-                backgroundColor: "transparent", // Sem fundo
-                border: "none", // Removendo a borda
-                boxShadow: "none", // Removendo o efeito de sombra
-                padding: 0, // Removendo o padding
-              },
+              backgroundColor: "#D9D9D9",
+              borderRadius: "10px",
               
-              "& .MuiOutlinedInput-notchedOutline": {
-                border: "none", // Remover a borda padrão (no caso do `outlined`)
-              },
-              "& .MuiInput-underline:before": {
-                borderBottom: "none", // Remover a linha de baixo no caso do `underline`
-              },
-
-              backgroundColor:'#D9D9D9', borderRadius:"10px", marginTop: 0
             }}
           />
+
+          {/* Password Input */}
+          <Box sx={{ position: "relative" }}>
+            <TextField
+              required
+              fullWidth
+              id="password"
+              label="Senha"
+              name="password"
+              margin="normal"
+              type={user.showPassword ? "text" : "password"}
+              value={user.password}
+              onChange={onChange}
+              sx={{
+                "& .MuiInputBase-root": {
+                  backgroundColor: "transparent",
+                  border: "none",
+                  boxShadow: "none",
+                  padding: 0,
+                },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  border: "none",
+                },
+                "& .MuiInput-underline:before": {
+                  borderBottom: "none",
+                },
+                backgroundColor: "#D9D9D9",
+                borderRadius: "10px",
+                margin:0
+              }}
+            />
+           
+            <Button
+              onClick={() =>
+                setUser({ ...user, showPassword: !user.showPassword })
+              }
+              style={{
+                position: "absolute",
+                right: 10,
+                top: "25%",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              {user.showPassword ? (
+                <FaEyeSlash size={20} color="gray" />
+              ) : (
+                <FaEye size={20} color="gray" />
+              )}
+            </Button>
+          </Box>
 
           <Button
             sx={{
               mt: 2,
-              ml: 20,
+              ml: 10,
               mb: 10,
               backgroundColor: "#E31313",
               borderRadius: "8px",
@@ -203,7 +227,7 @@ function Login() {
               color: "gray",
             }}
           >
-            Não uma conta? Cadastre-se
+            Não tem uma conta? Cadastre-se
           </Box>
         </Box>
       </Box>
