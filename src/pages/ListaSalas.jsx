@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
-// Imports para criação de tabela
 import Table from "@mui/material/Table";
 import TableContainer from "@mui/material/TableContainer";
-// TableHead é onde colocamos os titulos
 import TableHead from "@mui/material/TableHead";
-// TableBody é onde colocamos o conteúdo
 import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
@@ -32,18 +29,13 @@ function listRooms() {
 
   const listRooms = rooms.map((sala) => {
     return (
-      <TableRow key={sala.number}>
-        <TableCell align="center">{sala.number}</TableCell>
+      <TableRow sx={{ borderBottom: "2px solid #fff"}} key={sala.number}>
+        <TableCell sx={{ }} align="center">{sala.number}</TableCell>
         <TableCell align="center">{sala.description}</TableCell>
         <TableCell align="center">{sala.capacity}</TableCell>
       </TableRow>
     );
   });
-
-  function logout() {
-    localStorage.removeItem("authenticated");
-    navigate("/");
-  }
 
   useEffect(() => {
     getRooms();
@@ -51,15 +43,18 @@ function listRooms() {
 
   return (
     <div>
-      {rooms.lenght === 0 ? (
+      {rooms.length === 0 ? (
         <h1>Carregando Salas</h1>
       ) : (
-        <div>
-          <h5>Lista de Salas</h5>
-          <TableContainer component={Paper} style={{ margin: "2px" }}>
+        <div >
+          <h2 style={{display:"flex", justifyContent:"center", color:"#807F7F"}}>Salas</h2>
+          <TableContainer component={Paper} style={{ margin: "14px" }}>
             <Table size="small">
               <TableHead
-                style={{ backgroundColor: "brown", borderStyle: "solid" }}
+                style={{
+                  backgroundColor: "#D9D9D9",
+                  border: "10px solid white none",
+                }}
               >
                 <TableRow>
                   <TableCell align="center">Número</TableCell>
@@ -67,12 +62,19 @@ function listRooms() {
                   <TableCell align="center">Capacidade</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>{listRooms}</TableBody>
+              <TableBody
+                sx={{
+                  backgroundColor: "#E9E7E7",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding:"100px",
+                }}
+              >
+                {listRooms}
+              </TableBody>
             </Table>
           </TableContainer>
-          <Button fullWidth variant="contained" onClick={logout}>
-            SAIR
-          </Button>
+          
         </div>
       )}
     </div>

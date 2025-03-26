@@ -32,6 +32,7 @@ function Login() {
       (response) => {
         alert(response.data.message);
         console.log(user);
+        localStorage.setItem('authenticated', true)
         navigate("/listasalas");
       },
       (error) => {

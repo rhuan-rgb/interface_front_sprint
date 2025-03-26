@@ -11,11 +11,12 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
         {/* <Route path="/listasalas" element={<ListaSalas />} /> */}
+
         <Route
           path="/listasalas"
           element={
             <ProtectedRoute>
-              <ListaSalas/>
+              <ListaSalas />
             </ProtectedRoute>
           }
         />

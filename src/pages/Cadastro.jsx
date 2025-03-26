@@ -150,7 +150,7 @@ function Cadastro() {
             required
             fullWidth
             id="email"
-            label="Email"
+            label="E-mail"
             name="email"
             margin="normal"
             type="email"
