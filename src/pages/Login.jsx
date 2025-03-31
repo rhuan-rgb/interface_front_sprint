@@ -186,7 +186,7 @@ function Login() {
               }
               style={{
                 position: "absolute",
-                right: 10,
+                right: 1,
                 top: "25%",
                 background: "none",
                 border: "none",

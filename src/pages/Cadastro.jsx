@@ -7,6 +7,7 @@ import { useState } from "react";
 import api from "../axios/axios";
 import senai from "../assets/senai_logo.png";
 import { Link, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Cadastro() {
   const [user, setUser] = useState({
@@ -14,6 +15,7 @@ function Cadastro() {
     email: "",
     cpf: "",
     password: "",
+    showPassword: false,
   });
 
   const onChange = (event) => {
@@ -142,7 +144,6 @@ function Cadastro() {
 
               backgroundColor: "#D9D9D9",
               borderRadius: "10px",
-              
             }}
           />
 
@@ -174,7 +175,7 @@ function Cadastro() {
 
               backgroundColor: "#D9D9D9",
               borderRadius: "10px",
-              marginTop: 0
+              marginTop: 0,
             }}
           />
 
@@ -208,38 +209,59 @@ function Cadastro() {
             }}
           />
 
-          <TextField
-            required
-            fullWidth
-            id="password"
-            label="Senha"
-            name="password"
-            margin="normal"
-            type="password"
-            value={user.password}
-            onChange={onChange}
-            
-            sx={{
-              // Removendo as formatações originais
-              "& .MuiInputBase-root": {
-                backgroundColor: "transparent", // Sem fundo
-                border: "none", // Removendo a borda
-                boxShadow: "none", // Removendo o efeito de sombra
-                padding: 0, // Removendo o padding
-              },
+          <Box sx={{ position: "relative" }}>
+            <TextField
+              required
+              fullWidth
+              id="password"
+              label="Senha"
+              name="password"
+              margin="normal"
+              type={user.showPassword ? "text" : "password"}
+              value={user.password}
+              onChange={onChange}
+              sx={{
+                // Removendo as formatações originais
+                "& .MuiInputBase-root": {
+                  backgroundColor: "transparent", // Sem fundo
+                  border: "none", // Removendo a borda
+                  boxShadow: "none", // Removendo o efeito de sombra
+                  padding: 0, // Removendo o padding
+                },
 
-              "& .MuiOutlinedInput-notchedOutline": {
-                border: "none", // Remover a borda padrão (no caso do `outlined`)
-              },
-              "& .MuiInput-underline:before": {
-                borderBottom: "none", // Remover a linha de baixo no caso do `underline`
-              },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  border: "none", // Remover a borda padrão (no caso do `outlined`)
+                },
+                "& .MuiInput-underline:before": {
+                  borderBottom: "none", // Remover a linha de baixo no caso do `underline`
+                },
 
-              backgroundColor: "#D9D9D9",
-              borderRadius: "10px",
-              marginTop: 1
-            }}
-          />
+                backgroundColor: "#D9D9D9",
+                borderRadius: "10px",
+                marginTop: 1,
+              }}
+            />
+
+            <Button
+              onClick={() =>
+                setUser({ ...user, showPassword: !user.showPassword })
+              }
+              style={{
+                position: "absolute",
+                right: 1,
+                top: "30%",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              {user.showPassword ? (
+                <FaEyeSlash size={20} color="gray" />
+              ) : (
+                <FaEye size={20} color="gray" />
+              )}
+            </Button>
+          </Box>
 
           <Button
             sx={{
