@@ -7,7 +7,6 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
 import api from "../axios/axios";
-import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 function listRooms() {

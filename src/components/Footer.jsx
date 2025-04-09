@@ -10,8 +10,9 @@ const Footer = () => {
         height: "25px",
         backgroundColor: "#d90000",
         bottom: 0,
-        position:"relative",
-        marginTop:'10px'
+        position:'fixed',
+        width: "100%",
+        
       }}
     ></Box>
   );
