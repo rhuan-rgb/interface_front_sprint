@@ -11,7 +11,7 @@ function Home() {
     <>
       <Button
         sx={{ display: "flex", marginLeft: "93%", marginTop: 0,}}
-        // onClick={() => navigate("/perfil")}
+        onClick={() => navigate("/perfil")}
       >
         <AccountCircleIcon sx={{ fontSize: 40, color:'#807F7F' }} />
       </Button>

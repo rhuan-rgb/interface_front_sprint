@@ -3,6 +3,7 @@ import Cadastro from "./pages/Cadastro";
 import ListaSalas from "./pages/ListaSalas";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import Perfil from "./pages/Perfil"
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -11,7 +12,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
-        {/* <Route path="/listasalas" element={<ListaSalas />} /> */}
 
         <Route
           path="/listasalas"
@@ -26,7 +26,16 @@ function App() {
           path="/home"
           element={
             <ProtectedRoute>
-              <Home/>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/perfil"
+          element={
+            <ProtectedRoute>
+              <Perfil />
             </ProtectedRoute>
           }
         />
