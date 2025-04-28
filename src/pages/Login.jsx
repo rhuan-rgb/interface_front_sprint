@@ -34,7 +34,7 @@ function Login() {
       (response) => {
         alert(response.data.message);
         localStorage.setItem("authenticated", true);
-        navigate("/listasalas");
+        navigate("/home");
       },
       (error) => {
         console.log(error);
@@ -125,7 +125,6 @@ function Login() {
             label="CPF"
             name="cpf"
             margin="normal"
-            type="number"
             value={user.cpf}
             onChange={onChange}
             sx={{

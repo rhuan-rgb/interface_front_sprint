@@ -6,55 +6,96 @@ import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
-import api from "../axios/axios";
+import Button from "@mui/material/Button";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
 import { useNavigate } from "react-router-dom";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
-import Button from "@mui/material/Button";
+import api from "../axios/axios";
 
-function listRooms() {
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  borderRadius: "10px",
+  boxShadow: 24,
+  p: 4,
+};
+
+function ListRooms() {
   const [rooms, setRooms] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [dataReservaInicio, setDataReservaInicio] = useState("");
+  const [dataReservaTermino, setDataReservaTermino] = useState("");
+  const [horaReservaInicio, setHoraReservaInicio] = useState("");
+  const [horaReservaTermino, setHoraReservaTermino] = useState("");
+
   const navigate = useNavigate();
 
-  async function getRooms() {
-    // Chamada da Api
-    await api.getClassroom().then(
-      (response) => {
-        console.log(response.data.classrooms);
+  useEffect(() => {
+    async function getRooms() {
+      try {
+        const response = await api.getClassroom();
         setRooms(response.data.classrooms);
-      },
-      (error) => {
+      } catch (error) {
         console.log("Erro ", error);
       }
-    );
-  }
+    }
 
-  const listRooms = rooms.map((sala) => {
-    return (
-      <TableRow sx={{ borderBottom: "2px solid #fff" }} key={sala.number}>
-        <TableCell sx={{}} align="center">
-          {sala.number}
-        </TableCell>
-        <TableCell align="center">{sala.description}</TableCell>
-        <TableCell align="center">{sala.capacity}</TableCell>
-      </TableRow>
-    );
-  });
-
-  useEffect(() => {
     getRooms();
   }, []);
 
+  const handleOpenModal = (room) => {
+    setSelectedRoom(room);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelectedRoom(null);
+    setDataReservaInicio("");
+    setDataReservaTermino("");
+    setHoraReservaInicio("");
+    setHoraReservaTermino("");
+  };
+
+  const handleReserva = () => {
+    if (
+      !dataReservaInicio ||
+      !dataReservaTermino ||
+      !horaReservaInicio ||
+      !horaReservaTermino
+    ) {
+      alert("Preencha os campos corretamente.");
+      return;
+    }
+
+    // Aqui você pode enviar para a API, se quiser
+    console.log("Reserva feita:", {
+      sala: selectedRoom?.number,
+      data: dataReserva,
+      hora: horaReserva,
+    });
+
+    alert("Reserva confirmada!");
+    handleCloseModal();
+  };
+
   return (
     <>
-       <Button
-        sx={{ display: "flex", marginLeft: "93%", marginTop: 0,}}
+      <Button
+        sx={{ display: "flex", marginLeft: "93%", marginTop: 0 }}
         onClick={() => navigate("/home")}
       >
-        <ArrowCircleLeftOutlinedIcon sx={{ fontSize: 40, color:'#807F7F' }} />
+        <ArrowCircleLeftOutlinedIcon sx={{ fontSize: 40, color: "#807F7F" }} />
       </Button>
 
-
-    
       <div>
         {rooms.length === 0 ? (
           <h1>Carregando Salas</h1>
@@ -69,36 +110,99 @@ function listRooms() {
             >
               Salas
             </h2>
-            <TableContainer component={Paper} style={{ margin: "14px" }}>
+            <TableContainer
+              component={Paper}
+              style={{ margin: "14px", marginBottom: "70px" }}
+            >
               <Table size="small">
-                <TableHead
-                  style={{
-                    backgroundColor: "#D9D9D9",
-                    border: "10px solid white none",
-                  }}
-                >
+                <TableHead style={{ backgroundColor: "#D9D9D9" }}>
                   <TableRow>
                     <TableCell align="center">Número</TableCell>
                     <TableCell align="center">Descrição</TableCell>
                     <TableCell align="center">Capacidade</TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody
-                  sx={{
-                    backgroundColor: "#E9E7E7",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    padding: "100px",
-                  }}
-                >
-                  {listRooms}
+                <TableBody sx={{ backgroundColor: "#E9E7E7" }}>
+                  {rooms.map((sala) => (
+                    <TableRow
+                      key={sala.number}
+                      onClick={() => handleOpenModal(sala)}
+                      sx={{
+                        cursor: "pointer",
+                        "&:hover": { backgroundColor: "#d3d3d3" },
+                      }}
+                    >
+                      <TableCell align="center">{sala.number}</TableCell>
+                      <TableCell align="center">{sala.description}</TableCell>
+                      <TableCell align="center">{sala.capacity}</TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>
           </div>
         )}
       </div>
+
+      {/* Modal para reserva */}
+      <Modal open={openModal} onClose={handleCloseModal}>
+        <Box sx={modalStyle}>
+          <Typography variant="h6" component="h2" gutterBottom>
+            Reserva da Sala {selectedRoom?.number}
+          </Typography>
+          <Typography sx={{ mb: 2 }}>
+            <strong>Descrição:</strong> {selectedRoom?.description}
+            <br />
+            <strong>Capacidade:</strong> {selectedRoom?.capacity}
+          </Typography>
+
+          <TextField
+            label="DataInicio"
+            type="date"
+            value={dataReservaInicio}
+            onChange={(data) => setDataReservaInicio(data.target.value)}
+            InputLabelProps={{ shrink: true }}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
+
+          <TextField
+            label="DataTermino"
+            type="date"
+            value={dataReservaTermino}
+            onChange={(data) => setDataReservaTermino(data.target.value)}
+            InputLabelProps={{ shrink: true }}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
+
+          <TextField
+            label="HoraInicio"
+            type="time"
+            value={horaReservaInicio}
+            onChange={(e) => setHoraReservaInicio(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
+
+          <TextField
+            label="HoraTermino"
+            type="time"
+            value={horaReservaTermino}
+            onChange={(e) => setHoraReservaTermino(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
+
+          <Button variant="contained" onClick={handleReserva} fullWidth>
+            Confirmar Reserva
+          </Button>
+        </Box>
+      </Modal>
     </>
   );
 }
-export default listRooms;
+
+export default ListRooms;
