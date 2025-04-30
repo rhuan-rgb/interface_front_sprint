@@ -71,40 +71,40 @@ function ListRooms() {
       !dataReservaInicio ||
       !dataReservaTermino ||
       !horaReservaInicio ||
-      !horaReservaTermino
+      !horaReservaTermino ||
+      !days
     ) {
       alert("Preencha os campos corretamente.");
       return;
-    } else {
-      alert(
-        dataReservaInicio +
-          " " +
-          dataReservaTermino +
-          " " +
-          horaReservaInicio +
-          " " +
-          horaReservaTermino +
-          " " +
-          dias(dataReservaInicio, dataReservaTermino) +
-          " " +
-          selectedRoom.number
-      );
+    }
+    const datahoraInicio = (dataReservaInicio+" "+horaReservaInicio);
+    const datahoraTermino = (dataReservaTermino+" "+horaReservaTermino);
 
-      const user_cpf = LocalStorage.getItem("user_cpf");
+    if (agendamento_nao_valido(datahoraInicio, datahoraTermino)){
+      alert("data do agendamento inválida")
+      return
+    }
+      const user_cpf = localStorage.getItem("user_cpf");
+
 
       await api.createSchedule({
         dateStart: dataReservaInicio,
         dateEnd: dataReservaTermino,
-        days: days,
+        days: days.split(","),
         user: user_cpf,
         classroom: selectedRoom.number,
         timeStart: horaReservaInicio,
         timeEnd: horaReservaTermino,
-      });
-    }
-
-    alert("Reserva confirmada!");
-    handleCloseModal();
+      }).then(
+        (response) => {
+          alert(response.data.message);
+          handleCloseModal();
+        },
+        (error)=>{
+          alert(error.response.data.error);
+        }
+      );
+    
   };
 
   return (
@@ -200,7 +200,11 @@ function ListRooms() {
             label="Dias"
             value={days}
             onChange={(dias) => setDays(dias.target.value)}
-            InputLabelProps={{ shrink: true }}
+            slotProps={{
+              inputLabel: {
+                shrink: true
+              }
+            }}
             fullWidth
             sx={{ mb: 2 }}
           />
@@ -210,7 +214,11 @@ function ListRooms() {
             type="time"
             value={horaReservaInicio}
             onChange={(hora) => setHoraReservaInicio(hora.target.value)}
-            InputLabelProps={{ shrink: true }}
+            slotProps={{
+              inputLabel: {
+                shrink: true
+              }
+            }}
             fullWidth
             sx={{ mb: 2 }}
           />
@@ -220,7 +228,11 @@ function ListRooms() {
             type="time"
             value={horaReservaTermino}
             onChange={(hora) => setHoraReservaTermino(hora.target.value)}
-            InputLabelProps={{ shrink: true }}
+            slotProps={{
+              inputLabel: {
+                shrink: true
+              }
+            }}
             fullWidth
             sx={{ mb: 2 }}
           />
@@ -247,3 +259,18 @@ export default ListRooms;
 
 //   return diferenca_de_dias;
 // }
+
+
+//função para checar se a data término é maior que a data início, e se a data é de um tempo futuro (evitando que o usuário agende algo "pra ontem")
+function agendamento_nao_valido(date_inicio, date_termino) {
+  const d1 = new Date(date_inicio);
+  const d2 = new Date(date_termino);
+  const now = new Date();
+
+  // Extrai apenas horas e minutos
+  const hora1 = d1.getHours() * 60 + d1.getMinutes(); // transforma as horas em minutos multiplicando por 60 para transformar horas e minutos em um único número, facilitando a comparação
+  const hora2 = d2.getHours() * 60 + d2.getMinutes();
+
+  return d2 < d1 || d1 < now || d2 < now || hora1 === hora2;
+}
+
