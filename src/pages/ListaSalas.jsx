@@ -21,9 +21,9 @@ const modalStyle = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: "background.paper",
+  bgcolor: "white",
   borderRadius: "10px",
-  boxShadow: 24,
+
   p: 4,
 };
 
@@ -31,6 +31,7 @@ function ListRooms() {
   const [rooms, setRooms] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const [days, setDays] = useState("");
   const [dataReservaInicio, setDataReservaInicio] = useState("");
   const [dataReservaTermino, setDataReservaTermino] = useState("");
   const [horaReservaInicio, setHoraReservaInicio] = useState("");
@@ -65,7 +66,7 @@ function ListRooms() {
     setHoraReservaTermino("");
   };
 
-  const handleReserva = () => {
+  const handleReserva = async () => {
     if (
       !dataReservaInicio ||
       !dataReservaTermino ||
@@ -74,14 +75,33 @@ function ListRooms() {
     ) {
       alert("Preencha os campos corretamente.");
       return;
-    }
+    } else {
+      alert(
+        dataReservaInicio +
+          " " +
+          dataReservaTermino +
+          " " +
+          horaReservaInicio +
+          " " +
+          horaReservaTermino +
+          " " +
+          dias(dataReservaInicio, dataReservaTermino) +
+          " " +
+          selectedRoom.number
+      );
 
-    // Aqui você pode enviar para a API, se quiser
-    console.log("Reserva feita:", {
-      sala: selectedRoom?.number,
-      data: dataReserva,
-      hora: horaReserva,
-    });
+      const user_cpf = LocalStorage.getItem("user_cpf");
+
+      await api.createSchedule({
+        dateStart: dataReservaInicio,
+        dateEnd: dataReservaTermino,
+        days: days,
+        user: user_cpf,
+        classroom: selectedRoom.number,
+        timeStart: horaReservaInicio,
+        timeEnd: horaReservaTermino,
+      });
+    }
 
     alert("Reserva confirmada!");
     handleCloseModal();
@@ -177,10 +197,19 @@ function ListRooms() {
           />
 
           <TextField
+            label="Dias"
+            value={days}
+            onChange={(dias) => setDays(dias.target.value)}
+            InputLabelProps={{ shrink: true }}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
+
+          <TextField
             label="HoraInicio"
             type="time"
             value={horaReservaInicio}
-            onChange={(e) => setHoraReservaInicio(e.target.value)}
+            onChange={(hora) => setHoraReservaInicio(hora.target.value)}
             InputLabelProps={{ shrink: true }}
             fullWidth
             sx={{ mb: 2 }}
@@ -190,7 +219,7 @@ function ListRooms() {
             label="HoraTermino"
             type="time"
             value={horaReservaTermino}
-            onChange={(e) => setHoraReservaTermino(e.target.value)}
+            onChange={(hora) => setHoraReservaTermino(hora.target.value)}
             InputLabelProps={{ shrink: true }}
             fullWidth
             sx={{ mb: 2 }}
@@ -206,3 +235,15 @@ function ListRooms() {
 }
 
 export default ListRooms;
+
+// function dias(data_inicio, data_termino){
+
+//   //aparentemente ainda falta criar as verificações caso o ser humanin decida colocar as datas errado...
+
+//   const array1 = data_inicio.split("-");
+//   const array2 = data_termino.split("-");
+
+//   const diferenca_de_dias = Number(array2[2]) - Number(array1[2]);
+
+//   return diferenca_de_dias;
+// }

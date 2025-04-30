@@ -34,6 +34,7 @@ function Login() {
       (response) => {
         alert(response.data.message);
         localStorage.setItem("authenticated", true);
+        localStorage.setItem("user_cpf", user.cpf );
         navigate("/home");
       },
       (error) => {

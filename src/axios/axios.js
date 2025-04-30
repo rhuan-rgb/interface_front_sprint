@@ -11,7 +11,7 @@ const sheets = {
     postCadastro:(user)=>api.post("user/",user),
     postLogin:(user)=>api.post("user/login", user),
     getClassroom:()=>api.get("classroom/"),
-
+    createSchedule:(data) => api.post("schedule/", data)
 }
 
 export default sheets;
