@@ -42,7 +42,8 @@ function ListRooms() {
   useEffect(() => {
     async function getRooms() {
       try {
-        const response = await api.getClassroom();
+        const token = localStorage.getItem("token");
+        const response = await api.getClassroom(token);
         setRooms(response.data.classrooms);
       } catch (error) {
         console.log("Erro ", error);
@@ -77,34 +78,35 @@ function ListRooms() {
       alert("Preencha os campos corretamente.");
       return;
     }
-    const datahoraInicio = (dataReservaInicio+" "+horaReservaInicio);
-    const datahoraTermino = (dataReservaTermino+" "+horaReservaTermino);
+    const datahoraInicio = (dataReservaInicio + " " + horaReservaInicio);
+    const datahoraTermino = (dataReservaTermino + " " + horaReservaTermino);
 
-    if (agendamento_nao_valido(datahoraInicio, datahoraTermino)){
+    if (agendamento_nao_valido(datahoraInicio, datahoraTermino)) {
       alert("data do agendamento inválida")
       return
     }
-      const user_cpf = localStorage.getItem("user_cpf");
+    const user_cpf = localStorage.getItem("user_cpf");
+    const token = localStorage.getItem("token");
 
 
-      await api.createSchedule({
-        dateStart: dataReservaInicio,
-        dateEnd: dataReservaTermino,
-        days: days.split(","),
-        user: user_cpf,
-        classroom: selectedRoom.number,
-        timeStart: horaReservaInicio,
-        timeEnd: horaReservaTermino,
-      }).then(
-        (response) => {
-          alert(response.data.message);
-          handleCloseModal();
-        },
-        (error)=>{
-          alert(error.response.data.error);
-        }
-      );
-    
+    await api.createSchedule({
+      dateStart: dataReservaInicio,
+      dateEnd: dataReservaTermino,
+      days: days.split(","),
+      user: user_cpf,
+      classroom: selectedRoom.number,
+      timeStart: horaReservaInicio,
+      timeEnd: horaReservaTermino,
+    }, token).then(
+      (response) => {
+        alert(response.data.message);
+        handleCloseModal();
+      },
+      (error) => {
+        alert(error.response.data.error);
+      }
+    );
+
   };
 
   return (
