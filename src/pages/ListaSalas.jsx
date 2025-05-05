@@ -112,28 +112,22 @@ function ListRooms() {
       );
   };
 
-  const handleDisponibilidade = async (
-    class_id,
-    dataReservaInicio,
-    dataReservaTermino
-  ) => {
+  const handleDisponibilidade = async (class_id, dataReservaInicio, dataReservaTermino) => {
+
     if (!dataReservaInicio || !dataReservaTermino) {
       alert("Informe o período dos agendamentos.");
       return;
     } else {
-      if (agendamento_nao_valido(dataReservaInicio, dataReservaTermino)) {
+    
+      console.log(class_id, dataReservaInicio, dataReservaTermino)
+      if (data_nao_valida(dataReservaInicio, dataReservaTermino)) {
         alert("data do agendamento inválida");
         return;
-      } else {
-        const salas = await api.getSchedulesByIdClassroomRanges(class_id, {
-          dataReservaInicio,
-          dataReservaTermino,
-        });
-        const salasFiltradas = limparHorariosComAgendamentos(
-          salas.getSchedulesByIdClassroomRanges
-        );
-        alert(salasFiltradas);
-      }
+      } 
+        const salas = await api.getSchedulesByIdClassroomRanges(class_id.number, dataReservaInicio, dataReservaTermino);
+        const salasFiltradas = limparHorariosComAgendamentos(salas.data.schedulesByDayAndTimeRange);
+        alert(JSON.stringify(salasFiltradas));
+      
     }
   };
 
@@ -226,17 +220,7 @@ function ListRooms() {
             sx={{ mb: 2 }}
           />
 
-          <Button
-            variant="contained"
-            onClick={() =>
-              handleDisponibilidade(
-                selectedRoom,
-                dataReservaInicio,
-                dataReservaTermino
-              )
-            }
-            fullWidth
-          >
+          <Button variant="contained" onClick={()=>handleDisponibilidade(selectedRoom, dataReservaInicio, dataReservaTermino)} fullWidth>
             conferir disponibilidade das salas
           </Button>
 
@@ -304,6 +288,7 @@ export default ListRooms;
 //   return diferenca_de_dias;
 // }
 
+
 // functions:
 
 //função para checar se a data término é maior que a data início, e se a data é de um tempo futuro (evitando que o usuário agende algo "pra ontem")
@@ -312,36 +297,50 @@ function agendamento_nao_valido(date_inicio, date_termino) {
   const d2 = new Date(date_termino);
   const now = new Date();
 
-  if (d1.getUTCHours() === 0 && d2.getUTCHours() === 0) {
-    d1.setHours(0, 0, 0, 0);
-    d2.setHours(0, 0, 0, 0);
-    now.setHours(0, 0, 0, 0);
-    return d2 < d1 || d1 < now || d2 < now;
-  }
   // Extrai apenas horas e minutos
-  const hora1 = d1.getHours() * 60 + d1.getMinutes(); // transforma as horas em minutos multiplicando por 60 para juntar as horas e os minutos em um único número, facilitando a comparação
+  const hora1 = d1.getHours() * 60 + d1.getMinutes(); // transforma as horas em minutos multiplicando por 60 para transformar horas e minutos em um único número, facilitando a comparação
   const hora2 = d2.getHours() * 60 + d2.getMinutes();
 
   return d2 < d1 || d1 < now || d2 < now || hora1 === hora2;
 }
 
-const limparHorariosComAgendamentos = (schedules) => {
-  const resultado = {};
+const getEpochLocal = (dateStr) => {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day).setHours(0, 0, 0, 0);
+};
 
-  for (const dia in schedules) {
-    resultado[dia] = {};
+const data_nao_valida = (dataInicio, dataTermino) => {
+  const d1Epoch = getEpochLocal(dataInicio);
+  const d2Epoch = getEpochLocal(dataTermino);
+  const nowEpoch = new Date().setHours(0, 0, 0, 0);
 
-    for (const faixa in schedules[dia]) {
-      if (schedules[dia][faixa].length === 0) {
-        resultado[dia][faixa] = [];
-      }
-    }
-
-    // Remove o dia completamente se não restar nenhuma faixa horária
-    if (Object.keys(resultado[dia]).length === 0) {
-      delete resultado[dia];
-    }
+  if (d2Epoch < d1Epoch || d1Epoch < nowEpoch || d2Epoch < nowEpoch) {
+    return true;
   }
 
+  return false;
+};
+
+
+const limparHorariosComAgendamentos = (schedulesByDayAndTimeRange) => {
+  // Itera sobre os dias da semana e filtra os intervalos de horário ocupados
+  const diasDaSemana = Object.keys(schedulesByDayAndTimeRange);
+  
+  const resultado = diasDaSemana.reduce((acc, dia) => {
+    // Filtra os intervalos de horário de cada dia
+    const horariosFiltrados = Object.entries(schedulesByDayAndTimeRange[dia])
+      .filter(([intervalo, reservas]) => reservas.length === 0) // Mantém apenas os intervalos sem reservas
+      .reduce((obj, [intervalo]) => {
+        obj[intervalo] = [];
+        return obj;
+      }, {});
+
+    // Adiciona o dia com seus horários filtrados no acumulador
+    if (Object.keys(horariosFiltrados).length > 0) {
+      acc[dia] = horariosFiltrados;
+    }
+    return acc;
+  }, {});
   return resultado;
 };
+

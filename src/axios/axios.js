@@ -16,10 +16,10 @@ const sheets = {
         authorization: token,
       },
     }),
-  getSchedulesByIdClassroomRanges: (class_id, { dataInicio, dataTermino }) =>
-    api.get("/schedule/ranges/", class_id, {
-      query: { weekStart: dataInicio, weekEnd: dataTermino},
-    }),
+  getSchedulesByIdClassroomRanges: (class_id, dataInicio, dataTermino ) =>
+    api.get(
+      `/schedule/ranges/${class_id}?weekStart=${dataInicio}&weekEnd=${dataTermino}`
+    ),
   createSchedule: (data, token) =>
     api.post("schedule/", data, {
       headers: {
