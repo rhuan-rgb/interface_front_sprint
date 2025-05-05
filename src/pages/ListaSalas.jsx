@@ -78,35 +78,63 @@ function ListRooms() {
       alert("Preencha os campos corretamente.");
       return;
     }
-    const datahoraInicio = (dataReservaInicio + " " + horaReservaInicio);
-    const datahoraTermino = (dataReservaTermino + " " + horaReservaTermino);
+    const datahoraInicio = dataReservaInicio + " " + horaReservaInicio;
+    const datahoraTermino = dataReservaTermino + " " + horaReservaTermino;
 
     if (agendamento_nao_valido(datahoraInicio, datahoraTermino)) {
-      alert("data do agendamento inválida")
-      return
+      alert("data do agendamento inválida");
+      return;
     }
     const user_cpf = localStorage.getItem("user_cpf");
     const token = localStorage.getItem("token");
 
+    await api
+      .createSchedule(
+        {
+          dateStart: dataReservaInicio,
+          dateEnd: dataReservaTermino,
+          days: days.split(","),
+          user: user_cpf,
+          classroom: selectedRoom.number,
+          timeStart: horaReservaInicio,
+          timeEnd: horaReservaTermino,
+        },
+        token
+      )
+      .then(
+        (response) => {
+          alert(response.data.message);
+          handleCloseModal();
+        },
+        (error) => {
+          alert(error.response.data.error);
+        }
+      );
+  };
 
-    await api.createSchedule({
-      dateStart: dataReservaInicio,
-      dateEnd: dataReservaTermino,
-      days: days.split(","),
-      user: user_cpf,
-      classroom: selectedRoom.number,
-      timeStart: horaReservaInicio,
-      timeEnd: horaReservaTermino,
-    }, token).then(
-      (response) => {
-        alert(response.data.message);
-        handleCloseModal();
-      },
-      (error) => {
-        alert(error.response.data.error);
+  const handleDisponibilidade = async (
+    class_id,
+    dataReservaInicio,
+    dataReservaTermino
+  ) => {
+    if (!dataReservaInicio || !dataReservaTermino) {
+      alert("Informe o período dos agendamentos.");
+      return;
+    } else {
+      if (agendamento_nao_valido(dataReservaInicio, dataReservaTermino)) {
+        alert("data do agendamento inválida");
+        return;
+      } else {
+        const salas = await api.getSchedulesByIdClassroomRanges(class_id, {
+          dataReservaInicio,
+          dataReservaTermino,
+        });
+        const salasFiltradas = limparHorariosComAgendamentos(
+          salas.getSchedulesByIdClassroomRanges
+        );
+        alert(salasFiltradas);
       }
-    );
-
+    }
   };
 
   return (
@@ -198,14 +226,28 @@ function ListRooms() {
             sx={{ mb: 2 }}
           />
 
+          <Button
+            variant="contained"
+            onClick={() =>
+              handleDisponibilidade(
+                selectedRoom,
+                dataReservaInicio,
+                dataReservaTermino
+              )
+            }
+            fullWidth
+          >
+            conferir disponibilidade das salas
+          </Button>
+
           <TextField
             label="Dias"
             value={days}
             onChange={(dias) => setDays(dias.target.value)}
             slotProps={{
               inputLabel: {
-                shrink: true
-              }
+                shrink: true,
+              },
             }}
             fullWidth
             sx={{ mb: 2 }}
@@ -218,8 +260,8 @@ function ListRooms() {
             onChange={(hora) => setHoraReservaInicio(hora.target.value)}
             slotProps={{
               inputLabel: {
-                shrink: true
-              }
+                shrink: true,
+              },
             }}
             fullWidth
             sx={{ mb: 2 }}
@@ -232,8 +274,8 @@ function ListRooms() {
             onChange={(hora) => setHoraReservaTermino(hora.target.value)}
             slotProps={{
               inputLabel: {
-                shrink: true
-              }
+                shrink: true,
+              },
             }}
             fullWidth
             sx={{ mb: 2 }}
@@ -262,6 +304,7 @@ export default ListRooms;
 //   return diferenca_de_dias;
 // }
 
+// functions:
 
 //função para checar se a data término é maior que a data início, e se a data é de um tempo futuro (evitando que o usuário agende algo "pra ontem")
 function agendamento_nao_valido(date_inicio, date_termino) {
@@ -269,10 +312,36 @@ function agendamento_nao_valido(date_inicio, date_termino) {
   const d2 = new Date(date_termino);
   const now = new Date();
 
+  if (d1.getUTCHours() === 0 && d2.getUTCHours() === 0) {
+    d1.setHours(0, 0, 0, 0);
+    d2.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+    return d2 < d1 || d1 < now || d2 < now;
+  }
   // Extrai apenas horas e minutos
-  const hora1 = d1.getHours() * 60 + d1.getMinutes(); // transforma as horas em minutos multiplicando por 60 para transformar horas e minutos em um único número, facilitando a comparação
+  const hora1 = d1.getHours() * 60 + d1.getMinutes(); // transforma as horas em minutos multiplicando por 60 para juntar as horas e os minutos em um único número, facilitando a comparação
   const hora2 = d2.getHours() * 60 + d2.getMinutes();
 
   return d2 < d1 || d1 < now || d2 < now || hora1 === hora2;
 }
 
+const limparHorariosComAgendamentos = (schedules) => {
+  const resultado = {};
+
+  for (const dia in schedules) {
+    resultado[dia] = {};
+
+    for (const faixa in schedules[dia]) {
+      if (schedules[dia][faixa].length === 0) {
+        resultado[dia][faixa] = [];
+      }
+    }
+
+    // Remove o dia completamente se não restar nenhuma faixa horária
+    if (Object.keys(resultado[dia]).length === 0) {
+      delete resultado[dia];
+    }
+  }
+
+  return resultado;
+};
