@@ -36,8 +36,11 @@ function ListRooms() {
   const [dataReservaTermino, setDataReservaTermino] = useState("");
   const [horaReservaInicio, setHoraReservaInicio] = useState("");
   const [horaReservaTermino, setHoraReservaTermino] = useState("");
+  const [salasDisponiveisList, setSalasDisponiveisList] = useState(false);
 
   const navigate = useNavigate();
+
+  
 
   useEffect(() => {
     async function getRooms() {
@@ -112,22 +115,30 @@ function ListRooms() {
       );
   };
 
-  const handleDisponibilidade = async (class_id, dataReservaInicio, dataReservaTermino) => {
-
+  const handleDisponibilidade = async (
+    class_id,
+    dataReservaInicio,
+    dataReservaTermino
+  ) => {
     if (!dataReservaInicio || !dataReservaTermino) {
       alert("Informe o período dos agendamentos.");
       return;
     } else {
-    
-      console.log(class_id, dataReservaInicio, dataReservaTermino)
+      console.log(class_id, dataReservaInicio, dataReservaTermino);
       if (data_nao_valida(dataReservaInicio, dataReservaTermino)) {
         alert("data do agendamento inválida");
         return;
-      } 
-        const salas = await api.getSchedulesByIdClassroomRanges(class_id.number, dataReservaInicio, dataReservaTermino);
-        const salasFiltradas = limparHorariosComAgendamentos(salas.data.schedulesByDayAndTimeRange);
-        alert(JSON.stringify(salasFiltradas));
-      
+      }
+      const salas = await api.getSchedulesByIdClassroomRanges(
+        class_id.number,
+        dataReservaInicio,
+        dataReservaTermino
+      );
+      const salasFiltradas = limparHorariosComAgendamentos(
+        salas.data.schedulesByDayAndTimeRange
+      );
+      alert(JSON.stringify(salasFiltradas));
+      setSalasDisponiveisList(salasFiltradas);
     }
   };
 
@@ -220,7 +231,18 @@ function ListRooms() {
             sx={{ mb: 2 }}
           />
 
-          <Button variant="contained" onClick={()=>handleDisponibilidade(selectedRoom, dataReservaInicio, dataReservaTermino)} fullWidth>
+          <Button
+            variant="contained"
+            onClick={() =>
+              handleDisponibilidade(
+                selectedRoom,
+                dataReservaInicio,
+                dataReservaTermino
+              )
+            }
+            fullWidth
+            sx={{ mb: 2 }}
+          >
             conferir disponibilidade das salas
           </Button>
 
@@ -236,6 +258,39 @@ function ListRooms() {
             fullWidth
             sx={{ mb: 2 }}
           />
+
+          {/* {salasDisponiveisList ? (
+              <TableContainer
+              component={Paper}
+              style={{ margin: "14px", marginBottom: "70px" }}
+            >
+              <Table size="small">
+                <TableHead style={{ backgroundColor: "#D9D9D9" }}>
+                  <TableRow>
+                    <TableCell align="center">Segunda</TableCell>
+                    <TableCell align="center">Terça</TableCell>
+                    <TableCell align="center">Quarta</TableCell>
+                    <TableCell align="center">Quinta</TableCell>
+                    <TableCell align="center">Sexta</TableCell>
+                    <TableCell align="center">Sábado</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody sx={{ backgroundColor: "#E9E7E7" }}>
+                  {salasDisponiveisList.map((dia) => (
+                    <TableRow
+                      key={dia}
+                      sx={{
+                        "&:hover": { backgroundColor: "#d3d3d3" },
+                      }}
+                    >
+                      
+                      
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            ) : } */}
 
           <TextField
             label="HoraInicio"
@@ -288,7 +343,6 @@ export default ListRooms;
 //   return diferenca_de_dias;
 // }
 
-
 // functions:
 
 //função para checar se a data término é maior que a data início, e se a data é de um tempo futuro (evitando que o usuário agende algo "pra ontem")
@@ -305,11 +359,12 @@ function agendamento_nao_valido(date_inicio, date_termino) {
 }
 
 const getEpochLocal = (dateStr) => {
-  const [year, month, day] = dateStr.split('-').map(Number);
+  const [year, month, day] = dateStr.split("-").map(Number);
   return new Date(year, month - 1, day).setHours(0, 0, 0, 0);
 };
 
 const data_nao_valida = (dataInicio, dataTermino) => {
+  //getEpochLocal pega o valor da data em milisegundos
   const d1Epoch = getEpochLocal(dataInicio);
   const d2Epoch = getEpochLocal(dataTermino);
   const nowEpoch = new Date().setHours(0, 0, 0, 0);
@@ -321,11 +376,10 @@ const data_nao_valida = (dataInicio, dataTermino) => {
   return false;
 };
 
-
 const limparHorariosComAgendamentos = (schedulesByDayAndTimeRange) => {
   // Itera sobre os dias da semana e filtra os intervalos de horário ocupados
   const diasDaSemana = Object.keys(schedulesByDayAndTimeRange);
-  
+
   const resultado = diasDaSemana.reduce((acc, dia) => {
     // Filtra os intervalos de horário de cada dia
     const horariosFiltrados = Object.entries(schedulesByDayAndTimeRange[dia])
@@ -344,3 +398,16 @@ const limparHorariosComAgendamentos = (schedulesByDayAndTimeRange) => {
   return resultado;
 };
 
+
+
+const salasFiltradasEmArray = (salasFiltradas) => {
+  const dias = [ Seg: [], Ter: [], Qua: [], Qui: [], Sex: [], Sáb: [] ];
+  for(let i = 0; i > 5; i++) {
+    dias
+  }
+  
+  
+  dias = salasFiltradas.forEach((sala) => {
+    dias
+  }) 
+}
