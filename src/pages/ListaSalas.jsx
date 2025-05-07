@@ -68,6 +68,7 @@ function ListRooms() {
     setDataReservaTermino("");
     setHoraReservaInicio("");
     setHoraReservaTermino("");
+    setSalasDisponiveisList(false);
   };
 
   const handleReserva = async () => {
@@ -120,8 +121,8 @@ function ListRooms() {
     dataReservaInicio,
     dataReservaTermino
   ) => {
-    if (!dataReservaInicio || !dataReservaTermino) {
-      alert("Informe o período dos agendamentos.");
+    if (!dataReservaInicio || !dataReservaTermino || !days) {
+      alert("Informe o período e os dias dos agendamentos.");
       return;
     } else {
       console.log(class_id, dataReservaInicio, dataReservaTermino);
@@ -137,7 +138,7 @@ function ListRooms() {
       const salasFiltradas = limparHorariosComAgendamentos(
         salas.data.schedulesByDayAndTimeRange
       );
-      alert(JSON.stringify(salasFiltradas));
+      // alert(JSON.stringify(salasFiltradas));
       setSalasDisponiveisList(salasFiltradas);
     }
   };
@@ -231,23 +232,9 @@ function ListRooms() {
             sx={{ mb: 2 }}
           />
 
-          <Button
-            variant="contained"
-            onClick={() =>
-              handleDisponibilidade(
-                selectedRoom,
-                dataReservaInicio,
-                dataReservaTermino
-              )
-            }
-            fullWidth
-            sx={{ mb: 2 }}
-          >
-            conferir disponibilidade das salas
-          </Button>
 
           <TextField
-            label="Dias"
+            label= "Dias"
             value={days}
             onChange={(dias) => setDays(dias.target.value)}
             slotProps={{
@@ -259,38 +246,72 @@ function ListRooms() {
             sx={{ mb: 2 }}
           />
 
-          {/* {salasDisponiveisList ? (
-              <TableContainer
-              component={Paper}
-              style={{ margin: "14px", marginBottom: "70px" }}
-            >
-              <Table size="small">
-                <TableHead style={{ backgroundColor: "#D9D9D9" }}>
-                  <TableRow>
-                    <TableCell align="center">Segunda</TableCell>
-                    <TableCell align="center">Terça</TableCell>
-                    <TableCell align="center">Quarta</TableCell>
-                    <TableCell align="center">Quinta</TableCell>
-                    <TableCell align="center">Sexta</TableCell>
-                    <TableCell align="center">Sábado</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody sx={{ backgroundColor: "#E9E7E7" }}>
-                  {salasDisponiveisList.map((dia) => (
-                    <TableRow
-                      key={dia}
-                      sx={{
-                        "&:hover": { backgroundColor: "#d3d3d3" },
-                      }}
-                    >
-                      
-                      
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            ) : } */}
+          <Button
+            variant="contained"
+            onClick={() =>
+              handleDisponibilidade(
+                selectedRoom,
+                dataReservaInicio,
+                dataReservaTermino
+              )
+            }
+            fullWidth
+            sx={{ mb: 2, backgroundColor: "#D90000"}}
+          >
+            conferir disponibilidade das salas
+          </Button>
+
+
+
+{salasDisponiveisList && (
+  <TableContainer
+    component={Paper}
+    style={{ margin: "14px", marginBottom: "20px", maxHeight: "300px", overflowY: "auto" }}
+  >
+    <Table size="small">
+      <TableHead style={{ backgroundColor: "#D9D9D9" }}>
+        <TableRow>
+          {days
+            .split(",")
+            .map((dia) => dia.trim())
+            .filter((dia) => salasDisponiveisList[dia]) // só mostra se houver dados
+            .map((dia) => (
+              <TableCell align="center" key={dia}>
+                {dia}
+              </TableCell>
+            ))}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {(() => {
+          const horariosUnicos = new Set();
+          Object.values(salasDisponiveisList).forEach((horarios) => {
+            Object.keys(horarios).forEach((hora) => horariosUnicos.add(hora));
+          });
+          const horariosOrdenados = Array.from(horariosUnicos).sort();
+
+          return horariosOrdenados.map((horario) => (
+            <TableRow key={horario}>
+              {days
+                .split(",")
+                .map((dia) => dia.trim())
+                .filter((dia) => salasDisponiveisList[dia])
+                .map((dia) => (
+                  <TableCell align="center" key={`${dia}-${horario}`}>
+                    {salasDisponiveisList[dia][horario] !== undefined
+                      ? horario
+                      : "Indisponível"}
+                  </TableCell>
+                ))}
+            </TableRow>
+          ));
+        })()}
+      </TableBody>
+    </Table>
+  </TableContainer>
+)}
+
+
 
           <TextField
             label="HoraInicio"
@@ -320,7 +341,7 @@ function ListRooms() {
             sx={{ mb: 2 }}
           />
 
-          <Button variant="contained" onClick={handleReserva} fullWidth>
+          <Button variant="contained" onClick={handleReserva} fullWidth sx={{backgroundColor: "#D90000",}}>
             Confirmar Reserva
           </Button>
         </Box>
@@ -331,17 +352,11 @@ function ListRooms() {
 
 export default ListRooms;
 
-// function dias(data_inicio, data_termino){
 
-//   //aparentemente ainda falta criar as verificações caso o ser humanin decida colocar as datas errado...
 
-//   const array1 = data_inicio.split("-");
-//   const array2 = data_termino.split("-");
 
-//   const diferenca_de_dias = Number(array2[2]) - Number(array1[2]);
 
-//   return diferenca_de_dias;
-// }
+
 
 // functions:
 
@@ -397,17 +412,3 @@ const limparHorariosComAgendamentos = (schedulesByDayAndTimeRange) => {
   }, {});
   return resultado;
 };
-
-
-
-const salasFiltradasEmArray = (salasFiltradas) => {
-  const dias = [ Seg: [], Ter: [], Qua: [], Qui: [], Sex: [], Sáb: [] ];
-  for(let i = 0; i > 5; i++) {
-    dias
-  }
-  
-  
-  dias = salasFiltradas.forEach((sala) => {
-    dias
-  }) 
-}
