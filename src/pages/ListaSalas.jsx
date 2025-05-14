@@ -23,7 +23,6 @@ const modalStyle = {
   width: 400,
   bgcolor: "white",
   borderRadius: "10px",
-
   p: 4,
 };
 

@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Perfil from "./pages/Perfil"
 import ProtectedRoute from "./components/ProtectedRoute";
+import Reservas from "./pages/Reservas"
 
 function App() {
   return (
@@ -39,7 +40,19 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/reservas"
+          element={
+            <ProtectedRoute>
+              <Reservas/>
+            </ProtectedRoute>
+          }
+        />
+
       </Routes>
+
+
     </BrowserRouter>
   );
 }

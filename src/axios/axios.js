@@ -7,25 +7,26 @@ const api = axios.create({
   },
 });
 
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 const sheets = {
   postCadastro: (user) => api.post("user/", user),
   postLogin: (user) => api.post("user/login", user),
-  getClassroom: (token) =>
-    api.get("classroom/", {
-      headers: {
-        authorization: token,
-      },
-    }),
-  getSchedulesByIdClassroomRanges: (class_id, dataInicio, dataTermino ) =>
+  getClassroom: () => api.get("classroom/"),
+  getSchedulesByIdClassroomRanges: (class_id, dataInicio, dataTermino) =>
     api.get(
       `/schedule/ranges/${class_id}?weekStart=${dataInicio}&weekEnd=${dataTermino}`
     ),
-  createSchedule: (data, token) =>
-    api.post("schedule/", data, {
-      headers: {
-        authorization: token,
-      },
-    }),
+  createSchedule: (data) => api.post("schedule/", data),
 };
 
 export default sheets;

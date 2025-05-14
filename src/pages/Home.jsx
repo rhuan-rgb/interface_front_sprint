@@ -58,8 +58,11 @@ function Home() {
             height: "150px",
             color: "black",
           }}
+           onClick={() => navigate("/reservas")}
         >
-          <EventAvailableIcon sx={{ fontSize: 70 }} />
+          <EventAvailableIcon sx={{ fontSize: 70 }} 
+          
+          />
           Reservas
         </Button>
       </div>
