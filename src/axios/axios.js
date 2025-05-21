@@ -29,7 +29,7 @@ const sheets = {
     ),
   createSchedule: (data) => api.post("schedule/", data),
 
-  getReservaCpf: () => api.get("schedule/cpf/"+cpf),
+  getReservaCpf: (cpf) => api.get("schedule/cpf/"+cpf),
 };
 
 export default sheets;
