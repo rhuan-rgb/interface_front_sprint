@@ -22,11 +22,14 @@ const sheets = {
   postCadastro: (user) => api.post("user/", user),
   postLogin: (user) => api.post("user/login", user),
   getClassroom: () => api.get("classroom/"),
+
   getSchedulesByIdClassroomRanges: (class_id, dataInicio, dataTermino) =>
     api.get(
       `/schedule/ranges/${class_id}?weekStart=${dataInicio}&weekEnd=${dataTermino}`
     ),
   createSchedule: (data) => api.post("schedule/", data),
+
+  getReservaCpf: () => api.get("schedule/cpf/"+cpf),
 };
 
 export default sheets;

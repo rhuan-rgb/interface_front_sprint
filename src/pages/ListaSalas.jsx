@@ -20,11 +20,16 @@ const modalStyle = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: "90%",
+  maxWidth: 500,
+  maxHeight: "80vh",        // <- limita a altura do modal
+  overflowY: "auto",        // <- scroll vertical se o conteúdo for maior
+  overflowX: "hidden",      // <- impede scroll lateral
   bgcolor: "white",
   borderRadius: "10px",
   p: 4,
 };
+
 
 function ListRooms() {
   const [rooms, setRooms] = useState([]);
@@ -67,6 +72,7 @@ function ListRooms() {
     setDataReservaTermino("");
     setHoraReservaInicio("");
     setHoraReservaTermino("");
+    setDays("");
     setSalasDisponiveisList(false);
   };
 
