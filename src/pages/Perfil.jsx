@@ -51,6 +51,7 @@ function Perfil() {
       await api.updateUser(cpf, formData).then(
         (response) => {
           alert(response.data.message);
+          localStorage.setItem("user_cpf", formData.cpf);
         },
         (error) => {
           alert(error.response.data.error);
@@ -74,12 +75,6 @@ function Perfil() {
 
       {user && (
         <Box sx={{ display: "flex", flexDirection: "row", margin: "2rem" }}>
-          {/* Coluna esquerda (Foto de perfil) */}
-          <Box sx={{ marginRight: "2rem", textAlign: "center" }}>
-            <Button variant="outlined" color="primary">
-              Alterar Foto
-            </Button>
-          </Box>
 
           {/* Coluna direita (Informações do usuário) */}
           <Box>
