@@ -32,6 +32,10 @@ const sheets = {
   getReservaCpf: (cpf) => api.get("schedule/cpf/" + cpf),
 
   deleteReserva: (id) => api.delete(`schedule/${id}`),
+
+  getUser: (cpf) => api.get(`user/${cpf}`),
+
+  updateUser: (cpf, data) => api.put(`user/${cpf}`, data),
 };
 
 export default sheets;

@@ -35,7 +35,6 @@ function Reservas() {
     setAlert((prev) => ({ ...prev, open: false }));
   };
 
-  // Busca reservas do usuário no carregamento da página
   useEffect(() => {
     async function getReservaCpf() {
       try {
@@ -178,7 +177,6 @@ function Reservas() {
         )}
       </ModalBase>
 
-      {/* Alerta de feedback */}
       <Snackbar
         open={alert.open}
         autoHideDuration={3000}
