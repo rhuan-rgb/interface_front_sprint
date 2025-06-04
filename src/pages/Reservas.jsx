@@ -3,7 +3,15 @@ import { useState, useEffect } from "react";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
-import { Grid, Card, CardContent, Typography, Box, Snackbar, Alert } from "@mui/material";
+import {
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import api from "../axios/axios";
 import ModalBase from "../components/ModalBase";
 
@@ -20,6 +28,7 @@ function Reservas() {
   const [reservas, setReservas] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [reservaSelecionada, setReservaSelecionada] = useState(null);
+  const [totalReservas, setTotalReservas] = useState(0);
 
   const [alert, setAlert] = useState({
     open: false,
@@ -41,6 +50,7 @@ function Reservas() {
         const cpf = localStorage.getItem("user_cpf");
         const response = await api.getReservaCpf(cpf);
         setReservas(response.data.results);
+        setTotalReservas(response.data.results[0]?.total_reservas);
       } catch (error) {
         console.log("Erro ao buscar reservas", error);
       }
@@ -65,7 +75,6 @@ function Reservas() {
       setOpenModal(false);
       setReservaSelecionada(null);
       showAlert("success", "Reserva excluída com sucesso!");
-      
     } catch (error) {
       console.error("Erro ao deletar reserva:", error);
       showAlert("error", "Erro ao excluir reserva.");
@@ -81,7 +90,23 @@ function Reservas() {
         <ArrowCircleLeftOutlinedIcon sx={{ fontSize: 40, color: "#807F7F" }} />
       </Button>
 
-      <h1>Minhas Reservas</h1>
+      <Typography variant="h4" fontWeight="bold">
+        Minhas Reservas
+      </Typography>
+
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+        }}
+      >
+        <Typography
+          variant="h6"        
+          sx={{ color: "#807F7F", textAlign: "left", marginLeft:5  }}
+        >
+          Total de reservas realizadas: {totalReservas}
+        </Typography>
+      </Box>
 
       <Grid container spacing={2} mb={5}>
         {reservas.map((reserva) => (
