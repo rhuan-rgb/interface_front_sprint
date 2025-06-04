@@ -102,7 +102,7 @@ function Reservas() {
       >
         <Typography
           variant="h6"        
-          sx={{ color: "#807F7F", textAlign: "left", marginLeft:5  }}
+          sx={{ color: "#807F7F",textAlign: "left", marginLeft:5  }}
         >
           Total de reservas realizadas: {totalReservas}
         </Typography>

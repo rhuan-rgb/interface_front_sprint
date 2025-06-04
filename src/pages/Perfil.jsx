@@ -7,6 +7,9 @@ import Box from "@mui/material/Box";
 import { useNavigate } from "react-router-dom";
 import api from "../axios/axios";
 import { useState, useEffect } from "react";
+import ModalBase from "../components/ModalBase";
+import { Typography } from "@mui/material";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Perfil() {
   const navigate = useNavigate();
@@ -16,6 +19,13 @@ function Perfil() {
     name: "",
     email: "",
   });
+  const [senha, setSenha] = useState({
+    senha_atual: "",
+    nova_senha: "",
+    showPassword: false,
+    showPassword2: false,
+  });
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     async function getUser() {
@@ -36,6 +46,26 @@ function Perfil() {
 
     getUser();
   }, []);
+
+  async function updateSenha() {
+    try {
+      const cpf = localStorage.getItem("user_cpf");
+      const response = await api.updateSenha({
+        cpf,
+        senha_atual: senha.senha_atual,
+        nova_senha: senha.nova_senha,
+      });
+      alert(response.data.message); // Sucesso
+      setOpenModal(false); // Fecha o modal
+      setSenha({ senha_atual: "", nova_senha: "" }); // Limpa campos
+    } catch (error) {
+      if (error.response) {
+        alert(error.response.data.error); // Erro da API
+      } else {
+        alert("Erro ao alterar senha.");
+      }
+    }
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -75,8 +105,6 @@ function Perfil() {
 
       {user && (
         <Box sx={{ display: "flex", flexDirection: "row", margin: "2rem" }}>
-
-          {/* Coluna direita (Informações do usuário) */}
           <Box>
             <h2>Perfil do Usuário</h2>
 
@@ -114,32 +142,142 @@ function Perfil() {
                 />
               </Grid>
 
-              <Grid item xs={12} sx={{ marginTop: "1rem",  }}>
-                {editing ? (
+              <Grid item xs={12} sx={{ marginTop: "1rem" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {editing ? (
+                    <Button
+                      variant="contained"
+                      onClick={handleSaveChanges}
+                      sx={{ backgroundColor: "#008000", color: "white" }}
+                    >
+                      Salvar Alterações
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outlined"
+                      sx={{ backgroundColor: "#D90000", color: "white" }}
+                      onClick={() => setEditing(true)}
+                    >
+                      Editar
+                    </Button>
+                  )}
+
                   <Button
-                    variant="contained"
-                    onClick={handleSaveChanges}
-                    sx={{backgroundColor: "#008000", color:"white"}}
-                  >
-                    Salvar Alterações
-                  </Button>
-                ) : (
-                  <Button sx={{ backgroundColor: "#D90000", color:"white" }}
                     variant="outlined"
-                    onClick={() => setEditing(true)}
+                    sx={{ backgroundColor: "#D90000", color: "white" }}
+                    onClick={() => setOpenModal(true)}
                   >
-                    Editar
+                    Alterar Senha
                   </Button>
-                )}
+                </Box>
               </Grid>
-
-                
-
-
             </Grid>
           </Box>
         </Box>
       )}
+
+      <ModalBase
+        open={openModal}
+        onClose={() => {
+          setOpenModal(false);
+          setSenha({
+            senha_atual: "",
+            nova_senha: "",
+            showPassword: false,
+            showPassword2: false,
+          });
+        }}
+        title="Alterar Senha"
+      >
+        <Box sx={{ mt: 2 }}>
+          <Typography>Altere sua senha</Typography>
+
+          <Box sx={{ position: "relative" }}>
+            <TextField
+              label="Senha Atual"
+              fullWidth
+              type={senha.showPassword ? "text" : "password"}
+              margin="normal"
+              value={senha.senha_atual}
+              onChange={(e) =>
+                setSenha({ ...senha, senha_atual: e.target.value })
+              }
+            />
+            <Button
+              onClick={() =>
+                setSenha({ ...senha, showPassword: !senha.showPassword })
+              }
+              style={{
+                position: "absolute",
+                right: 8,
+                top: "45%",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                minWidth: "auto",
+              }}
+            >
+              {senha.showPassword ? (
+                <FaEyeSlash size={20} color="gray" />
+              ) : (
+                <FaEye size={20} color="gray" />
+              )}
+            </Button>
+          </Box>
+
+          <Box sx={{ position: "relative" }}>
+            <TextField
+              label="Nova Senha"
+              fullWidth
+              type={senha.showPassword2 ? "text" : "password"}
+              margin="normal"
+              value={senha.nova_senha}
+              onChange={(e) =>
+                setSenha({ ...senha, nova_senha: e.target.value })
+              }
+            />
+            <Button
+              onClick={() =>
+                setSenha({ ...senha, showPassword2: !senha.showPassword2 })
+              }
+              style={{
+                position: "absolute",
+                right: 8,
+                top: "45%",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                minWidth: "auto",
+              }}
+            >
+              {senha.showPassword2 ? (
+                <FaEyeSlash size={20} color="gray"/>
+              ) : (
+                <FaEye size={20} color="gray" />
+              )}
+            </Button>
+          </Box>
+
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: "#008000", color: "white" }}
+              onClick={updateSenha}
+              disabled={!senha.senha_atual || !senha.nova_senha}
+            >
+              Confirmar
+            </Button>
+          </Box>
+        </Box>
+      </ModalBase>
     </>
   );
 }

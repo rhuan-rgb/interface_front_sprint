@@ -36,6 +36,12 @@ const sheets = {
   getUser: (cpf) => api.get(`user/${cpf}`),
 
   updateUser: (cpf, data) => api.put(`user/${cpf}`, data),
+  
+  updateSenha: (data) => api.put("user/novasenha", data),
+
+
+
+
 };
 
 export default sheets;
