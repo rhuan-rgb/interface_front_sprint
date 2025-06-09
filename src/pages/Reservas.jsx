@@ -50,7 +50,7 @@ function Reservas() {
         const cpf = localStorage.getItem("user_cpf");
         const response = await api.getReservaCpf(cpf);
         setReservas(response.data.results);
-        setTotalReservas(response.data.results[0]?.total_reservas);
+        setTotalReservas(response.data.results[0]?.total_reservas || 0);
       } catch (error) {
         console.log("Erro ao buscar reservas", error);
       }

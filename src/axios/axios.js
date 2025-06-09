@@ -37,10 +37,7 @@ const sheets = {
 
   updateUser: (cpf, data) => api.put(`user/${cpf}`, data),
   
-  updateSenha: (data) => api.put("user/novasenha", data),
-
-
-
+  deleteUser: (cpf) => api.delete(`user/${cpf}`),
 
 };
 
