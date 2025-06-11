@@ -73,8 +73,8 @@ function Reservas() {
         prev.filter((reserva) => reserva.id !== reservaSelecionada.id)
       );
       setOpenModal(false);
-      setReservaSelecionada(null);
       showAlert("success", "Reserva excluída com sucesso!");
+      setTotalReservas(prev => prev - 1);
     } catch (error) {
       console.error("Erro ao deletar reserva:", error);
       showAlert("error", "Erro ao excluir reserva.");

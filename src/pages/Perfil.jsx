@@ -9,6 +9,7 @@ import api from "../axios/axios";
 import { useState, useEffect } from "react";
 import ModalBase from "../components/ModalBase";
 import { Typography } from "@mui/material";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Perfil() {
   const navigate = useNavigate();
@@ -19,7 +20,22 @@ function Perfil() {
     name: "",
     email: "",
   });
-  
+  const [ModalTipo, setModalTipo] = useState("");
+
+  const [senha, setSenha] = useState({
+    senha_atual: "",
+    nova_senha: "",
+    showPassword: false,
+    showPassword2: false,
+  });
+
+  const handleChangeSenha = (e) => {
+    const { name, value } = e.target;
+    setSenha((prevSenha) => ({
+      ...prevSenha,
+      [name]: value,
+    }));
+  };
 
   useEffect(() => {
     async function getUser() {
@@ -68,21 +84,47 @@ function Perfil() {
     }
   };
 
-  const handleOpenModal = () => {
+  const handleOpenModal = (tipo) => {
+    setModalTipo(tipo);
     setOpenModal(true);
   };
 
-  const deleteUser = async() =>  {
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSenha({
+      senha_atual: "",
+      nova_senha: "",
+      showPassword: false,
+      showPassword2: false,
+    });
+  };
+
+  const deleteUser = async () => {
     const cpf = localStorage.getItem("user_cpf");
     try {
       const response = await api.deleteUser(cpf);
       alert(response.data.message);
       localStorage.removeItem("authenticated");
-      navigate("/"); 
+      navigate("/");
     } catch (error) {
       alert(error.response.data.error);
     }
-  }
+  };
+
+  const updatePassword = async () => {
+    const cpf = localStorage.getItem("user_cpf");
+    try {
+      const response = await api.updatePassword({
+        cpf: cpf,
+        senha_atual: senha.senha_atual,
+        nova_senha: senha.nova_senha,
+      });
+      alert(response.data.message);
+      handleCloseModal();
+    } catch (error) {
+      alert(error.response.data.error);
+    }
+  };
 
   return (
     <>
@@ -161,7 +203,15 @@ function Perfil() {
                   <Button
                     variant="outlined"
                     sx={{ backgroundColor: "#D90000", color: "white" }}
-                    onClick={handleOpenModal}
+                    onClick={() => handleOpenModal("senha")}
+                  >
+                    Alterar senha
+                  </Button>
+
+                  <Button
+                    variant="outlined"
+                    sx={{ backgroundColor: "#D90000", color: "white" }}
+                    onClick={() => handleOpenModal("deletar")}
                   >
                     Deletar conta
                   </Button>
@@ -172,50 +222,164 @@ function Perfil() {
         </Box>
       )}
 
-      <ModalBase open={openModal} onClose={() => setOpenModal(false)}>
-        <Typography
-          sx={{
-            fontSize: 20,
-            fontWeight: "bold",
-            marginBottom: 2,
-            color: "#af2e2e",
-          }}
-        >
-          Confirmação
-        </Typography>
+      <ModalBase open={openModal} onClose={handleCloseModal}>
+        {ModalTipo === "deletar" && (
+          <>
+            <Typography
+              sx={{
+                fontSize: 20,
+                fontWeight: "bold",
+                marginBottom: 2,
+                color: "#af2e2e",
+              }}
+            >
+              Confirmação
+            </Typography>
 
-        <Typography sx={{ fontSize: 16, marginBottom: 3, color: "#333" }}>
-          Você tem certeza que deseja deletar sua conta?
-        </Typography>
+            <Typography sx={{ fontSize: 16, marginBottom: 3, color: "#333" }}>
+              Você tem certeza que deseja deletar sua conta?
+            </Typography>
 
-        <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-          <Button
-            variant="outlined"
-            onClick={() => setOpenModal(false)}
-            sx={{
-              backgroundColor: "#ccc",
-              color: "#000",
-              "&:hover": { backgroundColor: "#b3b3b3" },
-            }}
-          >
-            Cancelar
-          </Button>
+            <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
+              <Button
+                variant="outlined"
+                onClick={handleCloseModal}
+                sx={{
+                  backgroundColor: "#ccc",
+                  color: "#000",
+                  "&:hover": { backgroundColor: "#b3b3b3" },
+                }}
+              >
+                Cancelar
+              </Button>
 
-          <Button
-            variant="contained"
-            onClick={() => {
-              deleteUser();
-              setOpenModal(false);
-            }}
-            sx={{
-              backgroundColor: "#af2e2e",
-              color: "#fff",
-              "&:hover": { backgroundColor: "#941f1f" },
-            }}
-          >
-            Deletar
-          </Button>
-        </Box>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  deleteUser();
+                  handleCloseModal();
+                }}
+                sx={{
+                  backgroundColor: "#af2e2e",
+                  color: "#fff",
+                  "&:hover": { backgroundColor: "#941f1f" },
+                }}
+              >
+                Deletar
+              </Button>
+            </Box>
+          </>
+        )}
+
+        {ModalTipo === "senha" && (
+          <>
+            <Typography
+              sx={{
+                fontSize: 20,
+                fontWeight: "bold",
+                marginBottom: 2,
+                color: "#af2e2e",
+              }}
+            >
+              Alterar Senha
+            </Typography>
+
+            <Box sx={{ position: "relative", marginBottom: 2 }}>
+              <TextField
+                fullWidth
+                label="Senha Atual"
+                name="senha_atual"
+                type={senha.showPassword ? "text" : "password"}
+                value={senha.senha_atual}
+                onChange={handleChangeSenha}
+              />
+              <Button
+                onClick={() =>
+                  setSenha({ ...senha, showPassword: !senha.showPassword })
+                }
+                style={{
+                  position: "absolute",
+                  right: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  minWidth: "auto",
+                  padding: 0,
+                  cursor: "pointer",
+                }}
+              >
+                {senha.showPassword ? (
+                  <FaEyeSlash size={20} color="gray" />
+                ) : (
+                  <FaEye size={20} color="gray" />
+                )}
+              </Button>
+            </Box>
+
+            <Box sx={{ position: "relative", marginBottom: 3 }}>
+              <TextField
+                fullWidth
+                label="Nova Senha"
+                name="nova_senha"
+                type={senha.showPassword2 ? "text" : "password"}
+                value={senha.nova_senha}
+                onChange={handleChangeSenha}
+              />
+              <Button
+                onClick={() =>
+                  setSenha({
+                    ...senha,
+                    showPassword2: !senha.showPassword2,
+                  })
+                }
+                style={{
+                  position: "absolute",
+                  right: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  minWidth: "auto",
+                  padding: 0,
+                  cursor: "pointer",
+                }}
+              >
+                {senha.showPassword2 ? (
+                  <FaEyeSlash size={20} color="gray" />
+                ) : (
+                  <FaEye size={20} color="gray" />
+                )}
+              </Button>
+            </Box>
+
+            <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
+              <Button
+                variant="outlined"
+                onClick={handleCloseModal}
+                sx={{
+                  backgroundColor: "#ccc",
+                  color: "#000",
+                  "&:hover": { backgroundColor: "#b3b3b3" },
+                }}
+              >
+                Cancelar
+              </Button>
+
+              <Button
+                variant="contained"
+                onClick={updatePassword}
+                sx={{
+                  backgroundColor: "#af2e2e",
+                  color: "#fff",
+                  "&:hover": { backgroundColor: "#941f1f" },
+                }}
+              >
+                Alterar
+              </Button>
+            </Box>
+          </>
+        )}
       </ModalBase>
     </>
   );

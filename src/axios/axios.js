@@ -39,6 +39,8 @@ const sheets = {
   
   deleteUser: (cpf) => api.delete(`user/${cpf}`),
 
+  updatePassword: (data) => api.put(`user/newpassword`, data)
+
 };
 
 export default sheets;
